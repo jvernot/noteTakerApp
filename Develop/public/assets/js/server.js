@@ -10,6 +10,6 @@ app.use(express.json());
 
 
 app.listen(PORT, () => {
-    console.log('App listening on PORT: ' + PORT);
+    console.log(`App listening on PORT: ${PORT}`);
     console.log(`https://localhost:${PORT}`);
-  });
+});
