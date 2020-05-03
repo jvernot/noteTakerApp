@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const db = require('./db/db.json');
+const uuidv4 = require('uuid');
 
 
 const app = express();
@@ -23,35 +25,57 @@ app.get('*', (req, res) => {
 
 //API ROUTES
 
-//Get request
-app.get('/api/notes', (req, res) => {
-    fs.readFile('db/db.json', 'utf8', function(err, savedNotes) {
-        var words = JSON.parse(savedNotes);
-        res.send(words);
+//Get Request
+app.get("/api/notes", function(req, res) {
+    res.send(db);
+});
+
+
+//Post Request
+app.post("/api/notes", function(req, res) {
+
+    let noteId = uuidv4();
+    let newNote = {
+      id: noteId,
+      title: req.body.title,
+      text: req.body.text
+    };
+
+    fs.readFile("./db/db.json", "utf8", (err, data) => {
+      if (err) throw err;
+
+      const allNotes = JSON.parse(data);
+
+      allNotes.push(newNote);
+
+      fs.writeFile("./db/db.json", JSON.stringify(allNotes, null, 2), err => {
+        if (err) throw err;
+        res.send(db);
+        console.log("Note created!")
+      });
     });
 });
 
-//Post request
-app.post('/api/notes', (req, res) => {
-    fs.readFile('db/db.json', (err, data) => {
+//delete request
+app.delete("/api/notes/:id", (req, res) => {
+
+    let noteId = req.params.id;
+
+    fs.readFile("./db/db.json", "utf8", (err, data) => {
+      if (err) throw err;
+
+      const allNotes = JSON.parse(data);
+      const newAllNotes = allNotes.filter(note => note.id != noteId);
+
+      fs.writeFile("./db/db.json", JSON.stringify(newAllNotes, null, 2), err => {
         if (err) throw err;
+        res.send(db);
+        console.log("Note deleted!")
+      });
+    });
+});
 
-        let json = JSON.parse(data);
-        let note = {
-            title: req.body.title,
-            text: req.body.text,
-            id: uuivd1()
-        }
-        json.push(note);
 
-        fs.writeFile('db/db.json', JSON.stringify(json, null, 2), (err) => {
-            if (err) throw err;
-            res.send('200');
-        })
-
-    })
-
-})
 
 
 
