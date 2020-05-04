@@ -1,6 +1,7 @@
 const db = require('./../db/db.json');
-const uuidv4 = require('uuid');
 const fs = require('fs');
+const { uuid } = require('uuidv4');
+
 
 
 module.exports = (app) => {
@@ -13,7 +14,7 @@ module.exports = (app) => {
     //Post Request
     app.post("/api/notes", function(req, res) {
 
-        let noteId = uuidv4();
+        let noteId = uuid();
         let newNote = {
         id: noteId,
         title: req.body.title,
@@ -21,17 +22,17 @@ module.exports = (app) => {
         };
 
         fs.readFile("./db/db.json", "utf8", (err, data) => {
-        if (err) throw err;
-
-        const allNotes = JSON.parse(data);
-
-        allNotes.push(newNote);
-
-        fs.writeFile("./db/db.json", JSON.stringify(allNotes, null, 2), err => {
             if (err) throw err;
-            res.send(db);
-            console.log("Note created!")
-        });
+
+            const allNotes = JSON.parse(data);
+
+            allNotes.push(newNote);
+
+            fs.writeFile("./db/db.json", JSON.stringify(allNotes, null, 2), err => {
+                if (err) throw err;
+                res.send(allNotes);
+                console.log("Note created!")
+            });
         });
     });
 
