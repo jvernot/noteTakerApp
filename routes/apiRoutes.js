@@ -49,7 +49,7 @@ module.exports = (app) => {
 
         fs.writeFile("./db/db.json", JSON.stringify(newAllNotes, null, 2), err => {
             if (err) throw err;
-            res.send(db);
+            res.send(newAllNotes);
             console.log("Note deleted!")
         });
         });
